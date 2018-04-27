@@ -1,6 +1,8 @@
 package com.example.mattgin.houstontemp;
 
 import android.app.ProgressDialog;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,16 +25,11 @@ public class WeatherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         weatherTextView = findViewById(R.id.weather_tv);
+        if (temperature == null) {
+            new GetData().execute();
+        }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Data is fetched when first starting the activity,
-        // as well as when reopening the activity
-        new GetData().execute();
-    }
-    
     /**
      * Async task class to get json data by making an HTTP call
      */
@@ -41,6 +38,10 @@ public class WeatherActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            // Lock screen orientation while performing the background task
+            // to ensure no memory leaks
+            lockScreenOrientation();
+
             // Show progress dialog
             pDialog = new ProgressDialog(WeatherActivity.this);
             pDialog.setMessage("Please wait...");
@@ -52,7 +53,7 @@ public class WeatherActivity extends AppCompatActivity {
         protected Void doInBackground(Void... arg0) {
             HttpHandler sh = new HttpHandler();
 
-            // Making a request to url and getting response
+            // Making a request to url and get the response
             String jsonStr = sh.makeServiceCall();
 
             Log.i(TAG, "Response from url: " + jsonStr);
@@ -94,13 +95,24 @@ public class WeatherActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             // Dismiss the progress dialog
-            if (pDialog.isShowing())
+            if (pDialog != null) {
                 pDialog.dismiss();
-            /**
-             * Updating parsed JSON data into TextView
-             * */
+            }
+            unlockScreenOrientation();
             weatherTextView.setText(temperature + "°F");
         }
 
+        private void lockScreenOrientation() {
+            int currentOrientation = getResources().getConfiguration().orientation;
+            if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+        }
+
+        private void unlockScreenOrientation() {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        }
     }
 }
