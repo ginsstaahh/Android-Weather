@@ -27,14 +27,14 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     /**
-     * Async task class to get json by making HTTP call
+     * Async task class to get json data by making an HTTP call
      */
     private class GetData extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // Showing progress dialog
+            // Show progress dialog
             pDialog = new ProgressDialog(WeatherActivity.this);
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);

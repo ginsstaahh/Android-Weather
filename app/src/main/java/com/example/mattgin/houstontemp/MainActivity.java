@@ -21,9 +21,8 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
-                startActivity(intent);
-                Log.v(TAG, "intent -> weather activity");
+                // Redirect to weather activity when clicked
+                startActivity(new Intent(MainActivity.this, WeatherActivity.class));
             }
         });
     }
