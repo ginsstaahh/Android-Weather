@@ -23,9 +23,16 @@ public class WeatherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         weatherTextView = findViewById(R.id.weather_tv);
-        new GetData().execute();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Data is fetched when first starting the activity,
+        // as well as when reopening the activity
+        new GetData().execute();
+    }
+    
     /**
      * Async task class to get json data by making an HTTP call
      */
